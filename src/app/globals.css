@@ -1,0 +1,216 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fire-50: #fff7ed;
+  --color-fire-100: #ffedd5;
+  --color-fire-200: #fed7aa;
+  --color-fire-300: #fdba74;
+  --color-fire-400: #fb923c;
+  --color-fire-500: #f97316;
+  --color-fire-600: #ea580c;
+  --color-fire-700: #c2410c;
+  --color-fire-800: #9a3412;
+  --color-fire-900: #7c2d12;
+  --color-concrete-50: #fafafa;
+  --color-concrete-100: #f5f5f5;
+  --color-concrete-200: #e5e5e5;
+  --color-concrete-300: #d4d4d4;
+  --color-concrete-400: #a3a3a3;
+  --color-concrete-500: #737373;
+  --color-concrete-600: #525252;
+  --color-concrete-700: #404040;
+  --color-concrete-800: #262626;
+  --color-concrete-900: #0e0e0e;
+  --color-concrete-950: #0a0a0a;
+  --color-blood-500: #dc2626;
+  --color-blood-600: #b91c1c;
+  --color-blood-700: #991b1b;
+
+  --animate-smoke-rise: smokeRise 8s ease-in-out infinite;
+  --animate-smoke-drift: smokeDrift 12s ease-in-out infinite;
+  --animate-flicker: flicker 3s ease-in-out infinite;
+  --animate-glow-pulse: glowPulse 2s ease-in-out infinite;
+  --animate-slide-up: slideUp 0.6s ease-out forwards;
+  --animate-slide-left: slideLeft 0.6s ease-out forwards;
+  --animate-slide-right: slideRight 0.6s ease-out forwards;
+  --animate-fade-in: fadeIn 0.8s ease-out forwards;
+  --animate-text-glitch: textGlitch 5s ease-in-out infinite;
+  --animate-burn: burn 4s ease-in-out infinite;
+  --animate-ember-float: emberFloat 6s ease-in-out infinite;
+  --animate-grate-sizzle: grateSizzle 0.5s ease-in-out;
+
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Bebas Neue", "Arial Black", sans-serif;
+  --font-body: "Space Grotesk", system-ui, sans-serif;
+}
+
+@keyframes smokeRise {
+  0% { transform: translateY(0) scale(1); opacity: 0.3; }
+  50% { transform: translateY(-80px) scale(1.5); opacity: 0.6; }
+  100% { transform: translateY(-160px) scale(2); opacity: 0; }
+}
+@keyframes smokeDrift {
+  0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0.2; }
+  25% { transform: translateX(30px) translateY(-40px) rotate(5deg); opacity: 0.4; }
+  50% { transform: translateX(10px) translateY(-80px) rotate(-3deg); opacity: 0.5; }
+  75% { transform: translateX(-20px) translateY(-120px) rotate(2deg); opacity: 0.3; }
+  100% { transform: translateX(0) translateY(-160px) rotate(0deg); opacity: 0; }
+}
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  10% { opacity: 0.8; }
+  20% { opacity: 1; }
+  30% { opacity: 0.6; }
+  40% { opacity: 1; }
+  50% { opacity: 0.9; }
+  60% { opacity: 1; }
+  70% { opacity: 0.7; }
+  80% { opacity: 1; }
+  90% { opacity: 0.85; }
+}
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 10px #f97316, 0 0 20px #ea580c, 0 0 40px #c2410c; }
+  50% { text-shadow: 0 0 20px #fb923c, 0 0 40px #f97316, 0 0 80px #ea580c; }
+}
+@keyframes slideUp {
+  0% { transform: translateY(60px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes slideLeft {
+  0% { transform: translateX(60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideRight {
+  0% { transform: translateX(-60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes textGlitch {
+  0%, 90%, 100% { transform: translate(0); clip-path: inset(0 0 0 0); }
+  92% { transform: translate(-2px, 1px); clip-path: inset(20% 0 40% 0); }
+  94% { transform: translate(2px, -1px); clip-path: inset(60% 0 10% 0); }
+  96% { transform: translate(-1px, 2px); clip-path: inset(10% 0 70% 0); }
+  98% { transform: translate(1px, -2px); clip-path: inset(50% 0 20% 0); }
+}
+@keyframes burn {
+  0%, 100% { text-shadow: 0 0 2px #ea580c, 0 0 4px #f97316, 0 0 6px #fb923c; color: #f97316; }
+  25% { text-shadow: 0 0 4px #f97316, 0 0 8px #ea580c, 0 0 12px #c2410c; color: #fb923c; }
+  50% { text-shadow: 0 0 6px #c2410c, 0 0 12px #ea580c, 0 0 18px #9a3412; color: #f97316; }
+  75% { text-shadow: 0 0 3px #ea580c, 0 0 6px #fb923c, 0 0 9px #f97316; color: #fb923c; }
+}
+@keyframes emberFloat {
+  0% { transform: translateY(0) translateX(0); opacity: 0.8; }
+  25% { transform: translateY(-30px) translateX(10px); opacity: 1; }
+  50% { transform: translateY(-60px) translateX(-5px); opacity: 0.6; }
+  75% { transform: translateY(-90px) translateX(15px); opacity: 0.4; }
+  100% { transform: translateY(-120px) translateX(0); opacity: 0; }
+}
+@keyframes grateSizzle {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.02); }
+  50% { transform: scale(0.98); }
+  75% { transform: scale(1.01); }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 #0e0e0e;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #e5e5e5;
+  font-family: var(--font-body), system-ui, sans-serif;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0e0e0e;
+}
+::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border: none;
+}
+
+::selection {
+  background: #f97316;
+  color: #0a0a0a;
+}
+
+/* Custom scrollbar reveal effect */
+.reveal-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Noise overlay for concrete effect */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Hover line effect */
+.hover-line {
+  position: relative;
+  overflow: hidden;
+}
+.hover-line::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #f97316;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-line:hover::after {
+  transform: translateX(0);
+}
+
+/* Brute border */
+.brute-border {
+  border: 4px solid #404040;
+  transition: border-color 0.3s ease;
+}
+.brute-border:hover {
+  border-color: #f97316;
+}
+
+/* Diagonal clip for brutalist sections */
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%);
+}
+
+@container (max-width: 640px) {
+  .clip-diagonal {
+    clip-path: none;
+  }
+}
