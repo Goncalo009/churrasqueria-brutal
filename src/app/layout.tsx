@@ -1,38 +1,38 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Space_Grotesk, JetBrains_Mono } from "next/font/google";
-import "./globals.css";
+import { Bebas_Neue, JetBrains_Mono, Inter } from "next/font/google";
 
 const bebas = Bebas_Neue({
+  subsets: ["latin"],
   weight: "400",
   variable: "--font-display",
-  subsets: ["latin"],
+  display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-body",
+const mono = JetBrains_Mono({
   subsets: ["latin"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
+  display: "swap",
+});
+
+const inter = Inter({
   subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "TRAÇO & FOGO — Churrasqueria Artesanal",
-  description: "Carne crua. Fogo real. Sem atalhos. A melhor churrasqueria artesanal da cidade.",
+  title: "Traço & Fogo — Churrasqueira desde 1987",
+  description: "Churrasqueira de bairro com carácter. Carvão, grelha e carne como deve ser.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${bebas.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}>
-      <body className="min-h-full bg-concrete-950 text-concrete-200 font-body">
-        <div className="noise-overlay" />
+    <html lang="pt-PT" className={`${bebas.variable} ${inter.variable} ${mono.variable}`}>
+      <body className="bg-[#1a1513] text-[#e8dccd] antialiased">
         {children}
+        <div className="noise-overlay" />
       </body>
     </html>
   );
