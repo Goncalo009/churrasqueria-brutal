@@ -1,137 +1,188 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react";
 
 export default function Location() {
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
-  const [hoveredInfo, setHoveredInfo] = useState<number | null>(null)
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
-      { threshold: 0.15 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const els = entry.target.querySelectorAll(
+              ".reveal, .reveal-left, .reveal-right"
+            );
+            els.forEach((el, i) => {
+              setTimeout(() => el.classList.add("visible"), i * 120);
+            });
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section id="local" ref={ref} className="relative bg-concrete-900 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20 sm:py-32">
-        {/* Section header */}
-        <div className={`mb-12 sm:mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <span className="font-mono text-xs tracking-[0.5em] text-fire-600 block mb-4">04 / LOCAL</span>
-          <h2 className="font-display text-5xl sm:text-7xl md:text-8xl text-concrete-100 leading-[0.9]">
-            ONDE <span className="text-fire-500">PEGA</span><br />FOGO
-          </h2>
+    <section ref={ref} className="py-28 sm:py-36 px-6" id="local">
+      <div className="max-w-6xl mx-auto">
+        {/* Section label */}
+        <div className="reveal mb-14">
+          <span className="font-[var(--font-brut)] text-[#c0432d] text-[0.55rem] uppercase tracking-[0.35em]">
+            04 — Onde Estamos
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
-          {/* Info cards */}
-          <div className={`lg:col-span-5 space-y-5 transition-all duration-700 delay-200 ${visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"}`}>
-            {[
-              {
-                icon: "📍",
-                title: "ENDEREÇO",
-                content: "Rua da Brasa, 741 — Vila Madalena\nSão Paulo, SP — CEP 05435-000",
-              },
-              {
-                icon: "🕐",
-                title: "HORÁRIO",
-                content: "Terça a Domingo\n11h às 15h · Almoço\n18h às 23h · Jantar\n\nSegunda: fechado (a grelha descansa)",
-              },
-              {
-                icon: "📞",
-                title: "CONTATO",
-                content: "(11) 98765-4321\ncontato@tracoefogo.com.br\n\n@tracoefogo — Instagram",
-              },
-            ].map((info, i) => (
+        <h2 className="reveal font-[var(--font-display)] text-5xl sm:text-7xl md:text-8xl tracking-wider text-[#e8dccd] leading-[0.9] mb-16">
+          NO <span className="text-[#c0432d]">BAIRRO.</span>
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-20">
+          {/* Map placeholder — grid pattern */}
+          <div className="md:col-span-7 reveal-left">
+            <div
+              className="relative w-full aspect-[4/3] border border-[#2d2624] overflow-hidden group"
+            >
+              {/* Grid pattern */}
               <div
-                key={info.title}
-                className={`brute-border bg-concrete-950/80 p-6 transition-all duration-300 cursor-default ${
-                  hoveredInfo === i ? "border-fire-600 bg-concrete-950" : "border-concrete-700"
-                }`}
-                onMouseEnter={() => setHoveredInfo(i)}
-                onMouseLeave={() => setHoveredInfo(null)}
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `
+                    linear-gradient(rgba(45,38,36,0.5) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(45,38,36,0.5) 1px, transparent 1px)
+                  `,
+                  backgroundSize: "40px 40px",
+                }}
+              />
+              {/* Coordinate labels */}
+              <div className="absolute top-3 left-3 font-[var(--font-brut)] text-[#6b6259] text-[0.5rem] tracking-widest">
+                38.7223°N, 9.1393°W
+              </div>
+              {/* Street labels */}
+              <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end font-[var(--font-brut)] text-[#8a8176] text-[0.6rem] tracking-wider uppercase">
+                <span className="border-b border-[#c0432d] pb-1">
+                  Rua da Grelha, 47
+                </span>
+                <span className="text-[#6b6259]">Alfama</span>
+              </div>
+              {/* Cross street label */}
+              <div
+                className="absolute top-1/2 right-4 font-[var(--font-brut)] text-[#6b6259] text-[0.55rem] tracking-widest uppercase"
+                style={{ transform: "translateY(-50%) rotate(90deg)", transformOrigin: "center center", whiteSpace: "nowrap" }}
               >
-                <div className="flex items-start gap-4">
-                  <span className="text-2xl mt-0.5">{info.icon}</span>
-                  <div>
-                    <h3 className="font-mono text-xs tracking-[0.3em] text-fire-600 mb-3">{info.title}</h3>
-                    <p className="font-body text-sm text-concrete-400 whitespace-pre-line leading-relaxed">
-                      {info.content}
-                    </p>
-                  </div>
+                Beco do Carvão
+              </div>
+              {/* Pin */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div className="relative">
+                  <div
+                    className="w-3 h-3 bg-[#c0432d] animate-ping opacity-40"
+                    style={{ borderRadius: 0, position: "relative" }}
+                  />
+                  <div
+                    className="w-3 h-3 bg-[#c0432d] -mt-3"
+                    style={{ borderRadius: 0 }}
+                  />
+                  <div
+                    className="w-10 h-10 border border-[#c0432d] opacity-40 -mt-[46px] -ml-[16px]"
+                    style={{ borderRadius: 0, position: "relative" }}
+                  />
                 </div>
               </div>
-            ))}
-
-            {/* Big CTA */}
-            <a
-              href="https://maps.google.com/?q=Rua+da+Brasa+741+Vila+Madalena+São+Paulo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block font-mono text-xs tracking-[0.3em] border-2 border-fire-700 text-fire-500 px-6 py-4 text-center hover:bg-fire-600 hover:text-concrete-950 transition-all duration-200 hover:shadow-[4px_4px_0px_#ea580c] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
-            >
-              ABRIR NO GOOGLE MAPS ↗
-            </a>
+              {/* Subtle hover glow */}
+              <div className="absolute inset-0 bg-[#c0432d]/0 group-hover:bg-[#c0432d]/[0.03] transition-colors duration-500 pointer-events-none" />
+            </div>
           </div>
 
-          {/* Map area */}
-          <div className={`lg:col-span-7 transition-all duration-700 delay-500 ${visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}>
-            <div className="relative brute-border overflow-hidden bg-concrete-800" style={{ minHeight: "400px" }}>
-              {/* Stylized map placeholder with brutalist treatment */}
-              <div className="absolute inset-0" style={{
-                backgroundImage: `
-                  linear-gradient(rgba(249,115,22,0.05) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(249,115,22,0.05) 1px, transparent 1px)
-                `,
-                backgroundSize: "30px 30px",
-              }} />
-
-              {/* Grid coordinates */}
-              <div className="absolute top-4 left-4 font-mono text-[10px] text-concrete-600 tracking-wider">
-                -23.5432° S / 46.6913° W
+          {/* Right — address & transport info */}
+          <div className="md:col-span-5 flex flex-col gap-8">
+            <div className="reveal-right border-b border-[#2d2624] pb-6">
+              <div className="font-[var(--font-brut)] text-[#6b6259] text-[0.55rem] uppercase tracking-[0.25em] mb-2">
+                Morada
               </div>
-              <div className="absolute top-4 right-4 font-mono text-[10px] text-concrete-600 tracking-wider">
-                VILA MADALENA // SP
-              </div>
+              <p className="font-[var(--font-display)] text-2xl tracking-wider text-[#e8dccd]">
+                Rua da Grelha, 47
+              </p>
+              <p className="font-[var(--font-body)] text-[#b5a99a] mt-1">
+                1100-129 Lisboa, Portugal
+              </p>
+            </div>
 
-              {/* Pin */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full z-10">
-                <div className="relative flex flex-col items-center">
-                  <div className="w-8 h-8 bg-fire-600 border-2 border-concrete-100 flex items-center justify-center animate-pulse">
-                    <span className="text-xs font-display text-concrete-950">T&F</span>
+            <div className="reveal-right border-b border-[#2d2624] pb-6">
+              <div className="font-[var(--font-brut)] text-[#6b6259] text-[0.55rem] uppercase tracking-[0.25em] mb-3">
+                Como Chegar
+              </div>
+              <div className="space-y-3">
+                <div className="flex gap-4 items-start">
+                  <span className="font-[var(--font-brut)] text-[#c0432d] text-[0.65rem] mt-[2px] min-w-[20px]">
+                    M
+                  </span>
+                  <div>
+                    <div className="font-[var(--font-body)] text-[#e8dccd] text-sm">
+                      Metro — Santa Apolónia (Linha Azul)
+                    </div>
+                    <div className="font-[var(--font-brut)] text-[#6b6259] text-[0.6rem] mt-0.5">
+                      5 minutos a pé
+                    </div>
                   </div>
-                  <div className="w-[1px] h-8 bg-fire-700" />
-                  <div className="w-4 h-4 bg-fire-600 rotate-45 -mt-2" />
-                  {/* Ripple */}
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-24 h-24 border border-fire-800 rounded-full animate-ping opacity-20" style={{ borderRadius: "0" }} />
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="font-[var(--font-brut)] text-[#c0432d] text-[0.65rem] mt-[2px] min-w-[20px]">
+                    E
+                  </span>
+                  <div>
+                    <div className="font-[var(--font-body)] text-[#e8dccd] text-sm">
+                      Elétrico 28E — Paragem Sé
+                    </div>
+                    <div className="font-[var(--font-brut)] text-[#6b6259] text-[0.6rem] mt-0.5">
+                      3 minutos a pé
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="font-[var(--font-brut)] text-[#c0432d] text-[0.65rem] mt-[2px] min-w-[20px]">
+                    A
+                  </span>
+                  <div>
+                    <div className="font-[var(--font-body)] text-[#e8dccd] text-sm">
+                      Autocarro — 737, 794
+                    </div>
+                    <div className="font-[var(--font-brut)] text-[#6b6259] text-[0.6rem] mt-0.5">
+                      Paragem Miradouro de Santa Luzia
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-4 items-start">
+                  <span className="font-[var(--font-brut)] text-[#c0432d] text-[0.65rem] mt-[2px] min-w-[20px]">
+                    C
+                  </span>
+                  <div>
+                    <div className="font-[var(--font-body)] text-[#e8dccd] text-sm">
+                      Carro — Estacionamento na Rua dos Remédios
+                    </div>
+                    <div className="font-[var(--font-brut)] text-[#6b6259] text-[0.6rem] mt-0.5">
+                      Zona verde, tarifa normal
+                    </div>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              {/* Street labels (decorative) */}
-              <div className="absolute bottom-16 left-8 font-mono text-[10px] text-concrete-700 tracking-[0.3em] rotate-90 origin-left">
-                R. HARMONIA
-              </div>
-              <div className="absolute bottom-24 right-12 font-mono text-[10px] text-concrete-700 tracking-[0.3em]">
-                R. DA BRASA
-              </div>
-              <div className="absolute bottom-36 left-20 font-mono text-[10px] text-concrete-700 tracking-[0.3em]">
-                R. FRADIQUE MONTEIRO
-              </div>
-
-              {/* Border info */}
-              <div className="absolute bottom-4 right-4 font-mono text-[10px] text-concrete-700 tracking-wider">
-                MAP DATA © OPENSTREETMAP
-              </div>
+            <div className="reveal-right">
+              <a
+                href="https://maps.google.com/?q=38.7223,-9.1393"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-fogo w-full text-center"
+              >
+                Abrir no Mapa
+              </a>
             </div>
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
