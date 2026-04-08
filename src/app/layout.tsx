@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, JetBrains_Mono, Inter } from "next/font/google";
+import "./globals.css";
 
 const bebas = Bebas_Neue({
   subsets: ["latin"],
