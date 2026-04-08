@@ -1,169 +1,168 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+
+const words = ["BRASA.", "FUMO.", "CARBONO.", "SABOR."];
+
+function smokeParticles(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: 5 + i * 20 + Math.random() * 10,
+    delay: i * 2.2 + Math.random() * 2,
+    size: 80 + Math.random() * 60,
+    duration: 10 + Math.random() * 6,
+  }));
+}
+
+function emberParticles(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: 3 + Math.random() * 94,
+    bottom: 10 + Math.random() * 30,
+    delay: i * 0.8 + Math.random() * 3,
+    duration: 5 + Math.random() * 5,
+    size: 2 + Math.random() * 2,
+  }));
+}
 
 export default function Hero() {
-  const [loaded, setLoaded] = useState(false)
-  const [mousePos, setMousePos] = useState({ x: 50, y: 50 })
+  const [word, setWord] = useState(0);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    setLoaded(true)
-    const handleMouse = (e: MouseEvent) => {
-      setMousePos({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100,
-      })
-    }
-    window.addEventListener("mousemove", handleMouse)
-    return () => window.removeEventListener("mousemove", handleMouse)
-  }, [])
+    const w = setInterval(() => setWord((w) => (w + 1) % words.length), 2500);
+    const t = setInterval(() => setTick((t) => t + 1), 1);
+    return () => { clearInterval(w); clearInterval(t); };
+  }, []);
+
+  const smokes = smokeParticles(6);
+  const embers = emberParticles(15);
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-concrete-950">
-      {/* Fire glow that follows cursor */}
-      <div
-        className="absolute pointer-events-none z-0 transition-all duration-1000 ease-out"
-        style={{
-          left: `${mousePos.x}%`,
-          top: `${mousePos.y}%`,
-          width: "600px",
-          height: "600px",
-          transform: "translate(-50%, -50%)",
-          background: "radial-gradient(circle, rgba(249,115,22,0.08) 0%, rgba(234,88,12,0.04) 40%, transparent 70%)",
-        }}
-      />
-
-      {/* Smoke particles */}
-      <div className="absolute bottom-0 left-1/4 w-32 h-32 opacity-30">
-        <div className="absolute bottom-0 w-16 h-16 bg-concrete-700 rounded-full animate-smoke-rise" style={{ animationDelay: "0s" }} />
-        <div className="absolute bottom-0 left-8 w-20 h-20 bg-concrete-600 rounded-full animate-smoke-drift" style={{ animationDelay: "2s" }} />
-        <div className="absolute bottom-0 right-4 w-12 h-12 bg-concrete-800 rounded-full animate-smoke-rise" style={{ animationDelay: "4s" }} />
-      </div>
-      <div className="absolute bottom-0 right-1/4 w-32 h-32 opacity-20">
-        <div className="absolute bottom-0 left-12 w-14 h-14 bg-concrete-700 rounded-full animate-smoke-drift" style={{ animationDelay: "1s" }} />
-        <div className="absolute bottom-0 w-10 h-10 bg-concrete-600 rounded-full animate-smoke-rise" style={{ animationDelay: "3s" }} />
-      </div>
-
-      {/* Ember floaters */}
-      {[...Array(6)].map((_, i) => (
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Smoke wisps */}
+      {smokes.map((s) => (
         <div
-          key={i}
-          className="absolute animate-ember-float"
+          key={s.id}
+          className="smoke-wisp"
           style={{
-            left: `${15 + i * 15}%`,
-            bottom: `${10 + (i % 3) * 15}%`,
-            animationDelay: `${i * 1.2}s`,
-            width: "4px",
-            height: "4px",
-            background: "#f97316",
-            borderRadius: "0%",
-            boxShadow: "0 0 6px #ea580c, 0 0 12px #f97316",
+            left: `${s.left}%`,
+            bottom: "15%",
+            width: s.size,
+            height: s.size,
+            animationDelay: `${s.delay}s`,
+            animationDuration: `${s.duration}s`,
           }}
         />
       ))}
 
-      {/* Grid overlay */}
-      <div className="absolute inset-0 z-[1] opacity-[0.04]"
+      {/* Ember particles */}
+      {embers.map((e) => {
+        const phase = tick + e.id * 7;
+        const x = Math.sin(phase * 0.02) * 8;
+        const y = -Math.abs(Math.sin(phase * 0.015)) * 80;
+        const op = Math.max(0, 1 - Math.abs(Math.sin(phase * 0.015)) * 1.5);
+        return (
+          <div
+            key={e.id + "e"}
+            className="ember-particle"
+            style={{
+              left: `${e.left}%`,
+              bottom: `${e.bottom}%`,
+              width: e.size,
+              height: e.size,
+              animationDelay: `${e.delay}s`,
+              animationDuration: `${e.duration}s`,
+            }}
+          />
+        );
+      })}
+
+      {/* Gradient overlay from bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-2/5 pointer-events-none"
         style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: "60px 60px",
+          background:
+            "linear-gradient(to top, rgba(192,67,45,0.04) 0%, rgba(26,21,19,0.8) 60%, transparent 100%)",
         }}
       />
 
-      {/* Diagonal slash */}
-      <div
-        className="absolute top-20 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-fire-800 to-transparent z-[2] opacity-40"
-      />
+      {/* Main content */}
+      <div className="relative z-10 text-center px-6 max-w-4xl">
+        <p className="font-[var(--font-brut)] text-[#6b6259] text-[0.6rem] uppercase tracking-[0.3em] mb-8">
+          Churrasqueira desde 1987 — Lisboa
+        </p>
 
-      {/* Decorative corner brackets */}
-      <div className="absolute top-8 left-8 w-16 h-16 border-l-4 border-t-4 border-fire-800 z-[3] opacity-50" />
-      <div className="absolute bottom-8 right-8 w-16 h-16 border-r-4 border-b-4 border-fire-800 z-[3] opacity-50" />
-
-      {/* Content */}
-      <div className="relative z-10 text-center px-4 sm:px-8 max-w-5xl mx-auto">
-        <div
-          className={`overflow-hidden mb-4 ${loaded ? "animate-slide-up" : "opacity-0"}`}
+        <h1
+          className="font-[var(--font-display)] text-[8rem] sm:text-[10rem] md:text-[13rem] leading-[0.85] tracking-wider text-[#e8dccd]"
+          style={{ letterSpacing: "0.06em" }}
         >
-          <span className="font-mono text-xs sm:text-sm tracking-[0.5em] text-fire-600 uppercase">
-            Churrasqueria Artesanal — Est. 2019
+          <span className="block">TRAÇO</span>
+          <span
+            className="block text-[#c0432d] text-[5rem] sm:text-[6rem] md:text-[7rem] tracking-wider"
+            style={{ letterSpacing: "0.1em" }}
+          >
+            &
           </span>
-        </div>
+          <span className="block heat-glow">FOGO</span>
+        </h1>
 
-        <div
-          className={`overflow-hidden ${loaded ? "animate-slide-up" : "opacity-0"}`}
-          style={{ animationDelay: "0.2s" }}
-        >
-          <h1 className="font-display text-7xl sm:text-8xl md:text-[10rem] lg:text-[12rem] leading-[0.85] tracking-[0.05em] text-concrete-100">
-            <span className="block animate-text-glitch">TRAÇO</span>
-            <span className="block animate-text-glitch text-fire-500" style={{ animationDelay: "0.1s" }}>
-              &amp; FOGO
-            </span>
-          </h1>
-        </div>
-
-        <div
-          className={`overflow-hidden mt-6 sm:mt-8 ${loaded ? "animate-slide-up" : "opacity-0"}`}
-          style={{ animationDelay: "0.5s" }}
-        >
-          <div className="flex items-center justify-center gap-4">
-            <div className="h-[1px] w-12 sm:w-24 bg-fire-700" />
-            <p className="font-mono text-xs sm:text-sm tracking-[0.3em] text-concrete-500 uppercase">
-              Carne crua. Fogo real. Sem atalhos.
-            </p>
-            <div className="h-[1px] w-12 sm:w-24 bg-fire-700" />
+        {/* Rotating word */}
+        <div className="mt-10 h-8 flex items-center justify-center overflow-hidden">
+          <div className="relative w-48 h-8 flex items-center justify-center">
+            {words.map((w, i) => (
+              <span
+                key={w}
+                className="absolute font-[var(--font-brut)] text-[#6b6259] text-[0.65rem] uppercase tracking-[0.25em] transition-all duration-700 ease-out"
+                style={{
+                  opacity: word === i ? 1 : 0,
+                  transform: word === i ? "translateY(0)" : "translateY(8px)",
+                }}
+              >
+                {w}
+              </span>
+            ))}
           </div>
         </div>
 
-        <div
-          className={`overflow-hidden mt-10 sm:mt-14 ${loaded ? "animate-slide-up" : "opacity-0"}`}
-          style={{ animationDelay: "0.8s" }}
-        >
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="#cardapio"
-              className="group relative font-mono text-sm tracking-[0.3em] bg-fire-600 text-concrete-950 px-10 py-4 hover:bg-fire-500 transition-all duration-200 hover:shadow-[6px_6px_0px_#ea580c] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] uppercase"
-            >
-              Ver Cardápio
-            </a>
-            <a
-              href="#reservas"
-              className="font-mono text-sm tracking-[0.3em] border-2 border-concrete-600 text-concrete-300 px-10 py-4 hover:border-fire-600 hover:text-fire-500 transition-all duration-300 uppercase"
-            >
-              Reservar Mesa
-            </a>
-          </div>
+        {/* CTAs */}
+        <div className="mt-14 flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="#carta" className="btn-fogo">
+            Ver Carta
+          </a>
+          <a href="#reservas" className="btn-outline">
+            Reservar Mesa
+          </a>
         </div>
 
         {/* Stats */}
-        <div
-          className={`mt-16 sm:mt-20 grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto border-t-2 border-concrete-800 pt-8 ${loaded ? "animate-fade-in" : "opacity-0"}`}
-          style={{ animationDelay: "1.2s" }}
-        >
+        <div className="mt-24 flex flex-wrap justify-center gap-12 sm:gap-20">
           {[
-            { num: "12h", label: "defumação lenta" },
-            { num: "100%", label: "carvão natural" },
-            { num: "7", label: "anos de brasa" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="font-display text-3xl sm:text-4xl text-fire-500">{stat.num}</div>
-              <div className="font-mono text-[10px] tracking-[0.2em] text-concrete-500 mt-1 uppercase">{stat.label}</div>
+            { num: "37", label: "Anos na brasa" },
+            { num: "1200°C", label: "Na grelha" },
+            { num: "0", label: "Atalhos" },
+          ].map((s) => (
+            <div key={s.label} className="text-center">
+              <div className="font-[var(--font-display)] text-3xl sm:text-4xl tracking-wider text-[#c0432d]">
+                {s.num}
+              </div>
+              <div className="font-[var(--font-brut)] text-[0.55rem] uppercase tracking-[0.25em] text-[#6b6259] mt-1">
+                {s.label}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div className={`absolute bottom-8 left-1/2 -translate-x-1/2 z-10 ${loaded ? "animate-fade-in" : "opacity-0"}`} style={{ animationDelay: "2s" }}>
-        <div className="flex flex-col items-center gap-2">
-          <span className="font-mono text-[10px] tracking-[0.3em] text-concrete-600 uppercase">Scroll</span>
-          <div className="w-[1px] h-12 bg-gradient-to-b from-fire-600 to-transparent relative overflow-hidden">
-            <div className="absolute top-0 w-full h-4 bg-fire-500 animate-bounce" />
-          </div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <span className="font-[var(--font-brut)] text-[0.5rem] uppercase tracking-[0.3em] text-[#6b6259]">
+          Scroll
+        </span>
+        <div className="w-[1px] h-8 bg-[#2d2624] relative overflow-hidden">
+          <div className="absolute w-full bg-[#c0432d] scroll-line" />
         </div>
       </div>
     </section>
-  )
+  );
 }
