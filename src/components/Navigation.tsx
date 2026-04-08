@@ -1,89 +1,94 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState, useEffect } from "react";
 
 const links = [
-  { label: "CONCEITO", href: "#conceito" },
-  { label: "CARDÁPIO", href: "#cardapio" },
-  { label: "RESERVAS", href: "#reservas" },
-  { label: "LOCAL", href: "#local" },
-]
+  { href: "#concepto", label: "Concepto" },
+  { href: "#carta", label: "Carta" },
+  { href: "#reservas", label: "Reservas" },
+  { href: "#local", label: "Local" },
+];
 
 export default function Navigation() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
-      setScrolled(window.scrollY > 50)
-    })
-  }
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-concrete-950/95 backdrop-blur-sm border-b-4 border-fire-600"
-          : "bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        scrolled ? "nav-scrolled py-3" : "py-5"
       }`}
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo */}
-          <a href="#" className="group relative">
-            <span className="font-display text-2xl sm:text-3xl tracking-[0.3em] text-fire-500 group-hover:text-fire-400 transition-colors duration-200">
-              TRAÇO & FOGO
-            </span>
-            <span className="block h-[2px] w-0 bg-fire-600 group-hover:w-full transition-all duration-500 ease-out mt-1" />
-          </a>
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <a href="#" className="flex items-baseline gap-[2px] group">
+          <span className="font-[var(--font-display)] text-2xl tracking-wider text-[#e8dccd] group-hover:text-[#c0432d] transition-colors duration-300">
+            TRAÇO
+          </span>
+          <span className="text-[#c0432d] text-sm mx-[1px]">&</span>
+          <span className="font-[var(--font-display)] text-2xl tracking-wider text-[#e8dccd] group-hover:text-[#c0432d] transition-colors duration-300">
+            FOGO
+          </span>
+        </a>
 
-          {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8 lg:gap-12">
-            {links.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="font-mono text-xs tracking-[0.2em] text-concrete-400 hover:text-fire-500 transition-colors duration-200 hover-line py-1"
-              >
-                {link.label}
-              </a>
-            ))}
+        <div className="hidden md:flex items-center gap-10">
+          {links.map((link) => (
             <a
-              href="#reservas"
-              className="font-mono text-xs tracking-[0.2em] bg-fire-600 text-concrete-950 px-5 py-3 hover:bg-fire-500 transition-all duration-200 hover:shadow-[4px_4px_0px_#f97316] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]"
+              key={link.href}
+              href={link.href}
+              className="brutal-link text-xs text-[#8a8176] font-[var(--font-brut)] tracking-[0.08em] uppercase"
             >
-              RESERVAR →
+              {link.label}
             </a>
-          </div>
-
-          {/* Mobile Toggle */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden font-mono text-fire-500 text-sm tracking-widest p-2"
-            aria-label="Toggle menu"
+          ))}
+          <a
+            href="#reservas"
+            className="btn-fogo !py-2 !px-5 text-[0.65rem] tracking-[0.15em]"
           >
-            {menuOpen ? "[FECHAR]" : "[MENU]"}
-          </button>
+            Reservar
+          </a>
         </div>
 
-        {/* Mobile Menu */}
-        {menuOpen && (
-          <div className="md:hidden border-t-2 border-concrete-800 py-6 space-y-4 animate-fade-in">
-            {links.map((link, i) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setMenuOpen(false)}
-                className="block font-mono text-sm tracking-[0.2em] text-concrete-400 hover:text-fire-500 transition-colors py-2"
-                style={{ animationDelay: `${i * 80}ms` }}
-              >
-                <span className="text-fire-700 mr-3">0{i + 1}.</span>
-                {link.label}
-              </a>
-            ))}
-          </div>
-        )}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden flex flex-col gap-[5px] p-2"
+        >
+          <span
+            className={`block h-[1px] bg-[#e8dccd] transition-all duration-300 origin-center ${
+              menuOpen ? "rotate-45 translate-y-[6px]" : "w-[22px]"
+            }`}
+          />
+          <span
+            className={`block h-[1px] bg-[#e8dccd] transition-all duration-300 origin-center ${
+              menuOpen ? "-rotate-45 -translate-y-[5px]" : "w-[22px]"
+            }`}
+          />
+        </button>
+      </div>
+
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ${
+          menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-6 pt-4 pb-6 bg-[#1a1513] border-b border-[#2d2624] flex flex-col gap-5">
+          {links.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              onClick={() => setMenuOpen(false)}
+              className="brutal-link text-sm text-[#8a8176] font-[var(--font-brut)] tracking-[0.08em] uppercase"
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
       </div>
     </nav>
-  )
+  );
 }
