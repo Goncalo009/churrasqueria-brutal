@@ -1,216 +1,133 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react";
 
-type MenuItem = {
-  name: string
-  desc: string
-  price: string
-  tag?: string
-  time?: string
-}
+const categories = ["CARNE", "PORCO", "FRANGO", "ACOMPS"];
 
-type MenuCategory = {
-  id: string
-  label: string
-  items: MenuItem[]
-}
+type MenuItem = { name: string; desc: string; price: string };
 
-const menuData: MenuCategory[] = [
-  {
-    id: "nobres",
-    label: "CORTES NOBRES",
-    items: [
-      { name: "Picanha Premium", desc: "Seleção Angus, capa de gordura 3mm, sal grosso artesanal", price: "R$ 89", tag: "★ ASSINATURA", time: "25 min" },
-      { name: "Costela 12h", desc: "Defumação lenta em lenha de eucalipto, cai na boca", price: "R$ 95", time: "12h de brasa" },
-      { name: "Cupim no Bafo", desc: "Amaciado naturalmente, crosta caramelizada no fogo baixo", price: "R$ 79", tag: "FAVORITO", time: "8 min" },
-      { name: "Bife de Chorizo", desc: "Corte argentino 400g, ponto argentino no sal e fogo", price: "R$ 109", time: "15 min" },
-    ],
-  },
-  {
-    id: "brasa",
-    label: "NA BRASA",
-    items: [
-      { name: "Cordeiro Patagônico", desc: "Perna inteira no espeto, alecrim da serra e alho negro", price: "R$ 119", tag: "RARIDADE", time: "30 min" },
-      { name: "Linguiça Artesanal", desc: "Produção própria, suína e bovina, com pimenta biquinho", price: "R$ 42", time: "12 min" },
-      { name: "Fraldinha na Brasa", desc: "Marinação secreta, corte rente à fibra", price: "R$ 75", time: "18 min" },
-      { name: "Maminha Inteira", desc: "Selada dos dois lados, interior rosado, suco próprio", price: "R$ 85", time: "20 min" },
-    ],
-  },
-  {
-    id: "acompanhamentos",
-    label: "ACOMPANHAMENTOS",
-    items: [
-      { name: "Farofa de Brasa", desc: "Torrada na banha, bacon crocante, cebola caramelizada", price: "R$ 28" },
-      { name: "Vinagrete do Fogo", desc: "Tomate assado na brasa, cebola roxa, coentrão fresco", price: "R$ 22" },
-      { name: "Mandioca na Brasa", desc: "Cozida e depois selada, manteiga de garrafa", price: "R$ 24" },
-      { name: "Arroz de Carreteiro", desc: "Com carne seca desfiada, alho frito e pimenta", price: "R$ 32" },
-      { name: "Queijo Coalho", desc: "Assado no espeto com melado de cana e orégano", price: "R$ 26" },
-    ],
-  },
-  {
-    id: "bebidas",
-    label: "BEBIDAS",
-    items: [
-      { name: "Caipirinha Artesanal", desc: "Cachaça artesanal mineira, limão siciliano, açúcar demerara", price: "R$ 32" },
-      { name: "Cerveja de Defumação", desc: "Stout defumada em parceria com cervejaria parceira", price: "R$ 38", tag: "NOVIDADE" },
-      { name: "Suco de Uva Integral", desc: "Uva bordô, prensamento artesanal, sem adição", price: "R$ 18" },
-      { name: "Água Mineral", desc: "Com ou sem gás, garrafa de vidro 500ml", price: "R$ 12" },
-    ],
-  },
-]
-
-function MenuItemRow({ item, index }: { item: MenuItem; index: number }) {
-  const [isHovered, setIsHovered] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
-      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <div
-      ref={ref}
-      className={`group border-b-2 border-concrete-800 py-5 sm:py-6 px-4 sm:px-6 transition-all duration-500 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-      }`}
-      style={{ transitionDelay: `${index * 80}ms` }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h3 className="font-display text-xl sm:text-2xl text-concrete-200 group-hover:text-fire-500 transition-colors duration-200 tracking-wide">
-              {item.name}
-            </h3>
-            {item.tag && (
-              <span className="font-mono text-[10px] tracking-[0.2em] bg-fire-700/30 text-fire-500 px-2 py-0.5 border border-fire-800">
-                {item.tag}
-              </span>
-            )}
-          </div>
-          <p className="font-body text-sm text-concrete-500 mt-1 max-w-xl leading-relaxed">
-            {item.desc}
-          </p>
-        </div>
-        <div className="flex items-center gap-4 sm:gap-6 flex-shrink-0 pt-2 sm:pt-0">
-          {item.time && (
-            <span className="font-mono text-[10px] tracking-wider text-concrete-600 hidden sm:block">
-              {item.time}
-            </span>
-          )}
-          <span className={`font-display text-2xl sm:text-3xl transition-all duration-300 ${isHovered ? "text-fire-500 scale-110" : "text-concrete-400"}`}>
-            {item.price}
-          </span>
-        </div>
-      </div>
-      {/* Hover fill effect */}
-      <div
-        className="absolute left-0 right-0 bottom-0 h-[2px] bg-fire-600 origin-left transition-transform duration-500"
-        style={{ transform: isHovered ? "scaleX(1)" : "scaleX(0)" }}
-      />
-    </div>
-  )
-}
+const menuData: Record<string, MenuItem[]> = {
+  CARNE: [
+    { name: "Bife de Vazia", desc: "300g, grelhado na brasa com sal grosso, servido no ferro.", price: "22€" },
+    { name: "Entrecosto", desc: "Assado lento em lenha de sobreiro durante 4 horas.", price: "18€" },
+    { name: "Chuleta", desc: "600g para duas pessoas. Mal passada como deve ser.", price: "34€" },
+    { name: "Picanha", desc: "Corte brasileiro selado ao vivo no ferro quente.", price: "26€" },
+    { name: "Alcatra", desc: "Pedaço nobre, grelhado sobre brasas de azinheira.", price: "24€" },
+  ],
+  PORCO: [
+    { name: "Costeletas", desc: "Marinadas em alho e colorau, grelhadas ao ponto.", price: "15€" },
+    { name: "Secretos", desc: "Corte ibérico fumado 3 horas em lenha de sobreiro.", price: "17€" },
+    { name: "Presa", desc: "Grelhada com pimentão, acompanhada de milho assado.", price: "16€" },
+    { name: "Papo Seco de Leitão", desc: "Pão rijo com leitão assado à Bairrada.", price: "12€" },
+  ],
+  FRANGO: [
+    { name: "Frango no Churrasco", desc: "Metade, marinado 24h em alho e limão, grelha directa.", price: "10€" },
+    { name: "Coxas Desossadas", desc: "Grelhadas com ervas, crocantes por fora, sumosas por dentro.", price: "12€" },
+    { name: "Asas Defumadas", desc: "Defumadas com aparas de sobreiro durante 2 horas.", price: "9€" },
+  ],
+  ACOMPS: [
+    { name: "Batata a Murro", desc: "Forno de lenha, alho e coentros frescos.", price: "5€" },
+    { name: "Salada Simples", desc: "Alface, tomate, cebola roxa e azeite virgem.", price: "4€" },
+    { name: "Milho Assado", desc: "Na brasa com manteiga e pimenta preta.", price: "4€" },
+    { name: "Pão de Alho", desc: "Feito na brasa, manteiga caseira e alho confitado.", price: "3€" },
+    { name: "Feijão Verde", desc: "Cozido com chouriço, fogo lento como manda a tradição.", price: "5€" },
+    { name: "Arroz de Tomate", desc: "Receita da avó Maria, feito ao minuto.", price: "4€" },
+  ],
+};
 
 export default function Menu() {
-  const [activeTab, setActiveTab] = useState(menuData[0].id)
-  const ref = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
+  const [activeTab, setActiveTab] = useState("CARNE");
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const el = ref.current
-    if (!el) return
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true) },
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const els = entry.target.querySelectorAll(
+              ".reveal, .menu-item-brutal"
+            );
+            els.forEach((el, i) => {
+              setTimeout(() => el.classList.add("visible"), i * 80);
+            });
+          }
+        });
+      },
       { threshold: 0.1 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
 
-  const activeCategory = menuData.find((c) => c.id === activeTab)
+  useEffect(() => {
+    const items = ref.current?.querySelectorAll(".menu-item-brutal");
+    items?.forEach((el, i) => {
+      el.classList.remove("visible");
+      setTimeout(() => el.classList.add("visible"), i * 80);
+    });
+  }, [activeTab]);
+
+  const items = menuData[activeTab] || [];
 
   return (
-    <section id="cardapio" ref={ref} className="relative bg-concrete-900 overflow-hidden">
-      {/* Background grid */}
-      <div className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: "40px 40px",
-        }}
-      />
-
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-20 sm:py-32 relative z-10">
-        {/* Section header */}
-        <div className={`mb-12 sm:mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <span className="font-mono text-xs tracking-[0.5em] text-fire-600 block mb-4">02 / CARDÁPIO</span>
-          <h2 className="font-display text-5xl sm:text-7xl md:text-8xl text-concrete-100 leading-[0.9]">
-            DIRETO DA<br />
-            <span className="text-fire-500">BRASA</span>
-          </h2>
+    <section ref={ref} className="py-28 sm:py-36 px-6" id="carta">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="reveal mb-6">
+          <span className="font-[var(--font-brut)] text-[#c0432d] text-[0.55rem] uppercase tracking-[0.35em]">
+            02 — Carta
+          </span>
         </div>
 
+        <h2 className="reveal font-[var(--font-display)] text-5xl sm:text-7xl md:text-8xl tracking-wider text-[#e8dccd] leading-[0.9] mb-14">
+          O QUE SAI DA <span className="text-[#c0432d]">GRELHA.</span>
+        </h2>
+
         {/* Tabs */}
-        <div className={`flex flex-wrap gap-2 sm:gap-4 mb-10 sm:mb-14 transition-all duration-700 delay-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          {menuData.map((cat) => (
+        <div className="reveal flex flex-wrap gap-2 mb-14">
+          {categories.map((cat) => (
             <button
-              key={cat.id}
-              onClick={() => setActiveTab(cat.id)}
-              className={`font-mono text-xs sm:text-sm tracking-[0.2em] px-4 sm:px-6 py-3 border-2 transition-all duration-200 ${
-                activeTab === cat.id
-                  ? "border-fire-600 bg-fire-600/10 text-fire-500"
-                  : "border-concrete-700 text-concrete-500 hover:border-concrete-500 hover:text-concrete-300"
+              key={cat}
+              onClick={() => setActiveTab(cat)}
+              className={`font-[var(--font-brut)] text-[0.65rem] uppercase tracking-[0.15em] px-5 py-3 border transition-all duration-200 ${
+                activeTab === cat
+                  ? "border-[#c0432d] text-[#c0432d] bg-[#c0432d]/10"
+                  : "border-[#2d2624] text-[#8a8176] hover:border-[#8a8176]"
               }`}
             >
-              {cat.label}
+              {cat}
             </button>
           ))}
         </div>
 
-        {/* Menu items */}
-        <div className="relative">
-          {menuData.map((cat) => (
+        {/* Items */}
+        <div className="flex flex-col">
+          {items.map((item, i) => (
             <div
-              key={cat.id}
-              className={`transition-all duration-500 ${
-                activeTab === cat.id ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 hidden"
-              }`}
+              key={item.name}
+              className="menu-item-brutal py-6 border-b border-[#2d2624] flex items-baseline justify-between cursor-default"
+              tabIndex={0}
             >
-              {cat.items.map((item, i) => (
-                <MenuItemRow key={item.name} item={item} index={i} />
-              ))}
+              <div className="flex-1 pr-4">
+                <h3 className="font-[var(--font-display)] text-2xl tracking-wider text-[#e8dccd]">
+                  {item.name}
+                </h3>
+                <p className="font-[var(--font-brut)] text-[0.72rem] text-[#8a8176] mt-1 leading-relaxed">
+                  {item.desc}
+                </p>
+              </div>
+              <span className="font-[var(--font-display)] text-2xl tracking-wider text-[#c0432d] shrink-0">
+                {item.price}
+              </span>
             </div>
           ))}
         </div>
 
-        {/* CTA */}
-        <div className={`mt-12 sm:mt-16 pt-8 border-t-2 border-concrete-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all duration-700 delay-500 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <div>
-            <p className="font-mono text-sm text-concrete-500">
-              → Cardápio completo disponível no restaurante. Consulte valores de rodízio.
-            </p>
-          </div>
-          <a
-            href="#reservas"
-            className="font-mono text-xs tracking-[0.2em] border-2 border-fire-700 text-fire-500 px-6 py-3 hover:bg-fire-600 hover:text-concrete-950 transition-all duration-200 flex-shrink-0"
-          >
-            FAZER RESERVA →
-          </a>
-        </div>
+        {/* Note */}
+        <p className="reveal mt-10 font-[var(--font-brut)] text-[#6b6259] text-[0.6rem] uppercase tracking-[0.1em] leading-relaxed">
+          * Os preços podem variar conforme o corte e o dia. Pergunte ao balcão para o especial do dia.
+        </p>
       </div>
     </section>
-  )
+  );
 }
